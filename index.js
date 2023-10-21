@@ -49,15 +49,24 @@ app.post("/salvarpergunta", (req, res) => {
 });
 
 app.get("/pergunta/:id", (req, res) => {
-  const id = req.params.id;
+  var id = req.params.id;
   Pergunta.findOne({
     where: { id: id },
   }).then((pergunta) => {
     if (pergunta != undefined) {
-      res.render("pergunta", {
-        pergunta: pergunta, // Passe o objeto 'pergunta' para a visualização
+      // Pergunta encontrada
+
+      Resposta.findAll({
+        where: { perguntaId: pergunta.id },
+        order: [["id", "DESC"]],
+      }).then((respostas) => {
+        res.render("pergunta", {
+          pergunta: pergunta,
+          respostas: respostas,
+        });
       });
     } else {
+      // Não encontrada
       res.redirect("/");
     }
   });
